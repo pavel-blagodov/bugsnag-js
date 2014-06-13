@@ -61,7 +61,7 @@
     }
     addScriptToMetaData(metaData);
 
-    sendToBugsnag({
+    self.sendReport({
       name: name || exception.name,
       message: exception.message || exception.description,
       stacktrace: stacktraceFromException(exception) || generateStacktrace(),
@@ -77,7 +77,7 @@
   // Notify Bugsnag about an error by passing in a `name` and `message`,
   // without requiring an exception.
   self.notify = function (name, message, metaData, severity) {
-    sendToBugsnag({
+    self.sendReport({
       name: name,
       message: message,
       stacktrace: generateStacktrace(),
@@ -311,7 +311,7 @@
   }
 
   // Send an error to Bugsnag.
-  function sendToBugsnag(details, metaData) {
+  self.sendReport = function (details, metaData) {
     // Validate the configured API key.
     var apiKey = getSetting("apiKey");
     if (!validateApiKey(apiKey) || !eventsRemaining) {
@@ -396,7 +396,7 @@
       columnNumber: details.columnNumber,
       payloadVersion: "2"
     });
-  }
+  };
 
   // Generate a browser stacktrace (or approximation) from the current stack.
   // This is used to add a stacktrace to `Bugsnag.notify` calls, and to add a
@@ -546,7 +546,7 @@
 
         if (shouldNotify && !ignoreOnError) {
 
-          sendToBugsnag({
+          self.sendReport({
             name: exception && exception.name || "window.onerror",
             message: message,
             file: url,
